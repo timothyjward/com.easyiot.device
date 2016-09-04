@@ -11,6 +11,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 
 import com.easyiot.base.api.Device;
+import com.easyiot.lora.device.api.capability.LoraDeviceCapability.ProvideLoraDevice_v1_0_0;
 import com.easyiot.lora.device.api.dto.SensorDataDTO;
 import com.easyiot.lora.device.provider.configuration.LoraSensorConfiguration;
 import com.easyiot.mqtt.protocol.api.MessageListener;
@@ -18,6 +19,7 @@ import com.easyiot.mqtt.protocol.api.MqttProtocol;
 
 import osgi.enroute.dto.api.DTOs;
 
+@ProvideLoraDevice_v1_0_0
 @Component(name = "com.easyiot.device.lora.device", configurationPolicy = ConfigurationPolicy.REQUIRE)
 @Designate(ocd = LoraSensorConfiguration.class, factory = true)
 public class LorasensorImpl implements Device {
@@ -39,7 +41,7 @@ public class LorasensorImpl implements Device {
 		}
 	};
 
-	@Reference
+	@Reference(name="mqttProtocolReference")
 	MqttProtocol mqttClient;
 
 	@Activate
