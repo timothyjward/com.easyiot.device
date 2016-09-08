@@ -3,13 +3,13 @@ package com.easyiot.lora.device.provider.configuration;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-@ObjectClassDefinition(name = "Lora enabled Device Configuration")
+@ObjectClassDefinition(name = "Lora enabled device configuration")
 public @interface LoraSensorConfiguration {
 
 	/**
 	 * Id of the device instance
 	 */
-	@AttributeDefinition(name = "Instance ID", description = "MQTT protocol instance ID", required = true)
+	@AttributeDefinition(name = "Instance ID", description = "Lora device instance ID", required = true)
 	public String id() default "lora.device.1";
 	
 	@AttributeDefinition(name = "Device Name", description = "Provides the name for this device")

@@ -22,7 +22,7 @@ public interface LoraDeviceCapability {
 	@Retention(RetentionPolicy.CLASS)
 	public @interface RequireLoraDevice {
 		/**
-		 * Version of the required security bundle
+		 * Version of the required lora bundle
 		 * 
 		 * @return
 		 */

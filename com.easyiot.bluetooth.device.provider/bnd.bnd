@@ -1,0 +1,36 @@
+#
+#  BUNDLE 
+#
+
+
+Bundle-Version:					1.0.0.${tstamp}
+Bundle-Description: 				\
+	A simple bluetooth device.
+
+Private-Package: \
+	com.easyiot.bluetooth.device.provider,\
+	com.easyiot.bluetooth.device.configuration
+	
+-buildpath: \
+	osgi.enroute.base.api;version=1.0,\
+	com.easyiot.bluetooth.device.api;version=latest,\
+	com.easyiot.base.api,\
+	com.easyiot.bluetooth.protocol.api
+	
+-testpath: \
+	osgi.enroute.junit.wrapper;version=4.12
+
+-includeresource: {readme.md}
+
+
+-runrequires:  \
+	osgi.identity;filter:='(osgi.identity=com.easyiot.bluetooth.device.provider)'
+	
+-runbundles: \
+	${error;Resolve first}
+	
+Bundle-License: \
+	https://opensource.org/licenses/Apache-2.0; \
+	link=http://www.apache.org/licenses/LICENSE-2.0; \
+	description="Apache Software License 2.0"
+Export-Package: com.easyiot.base.api
