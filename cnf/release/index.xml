@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<repository increment="1473334561000" name="Release" xmlns="http://www.osgi.org/xmlns/repository/v1.0.0">
+<repository increment="1473938120000" name="Release" xmlns="http://www.osgi.org/xmlns/repository/v1.0.0">
   <resource>
     <capability namespace="osgi.identity">
       <attribute name="osgi.identity" value="com.easyiot.bluetooth.device.api"/>
@@ -101,6 +101,128 @@
     </requirement>
     <requirement namespace="osgi.service">
       <directive name="filter" value="(objectClass=com.easyiot.bluetooth.protocol.api.BluetoothProtocol)"/>
+      <directive name="effective" value="active"/>
+    </requirement>
+    <requirement namespace="osgi.extender">
+      <directive name="filter" value="(&amp;(osgi.extender=osgi.component)(version&gt;=1.3.0)(!(version&gt;=2.0.0)))"/>
+      <directive name="effective" value="active"/>
+    </requirement>
+  </resource>
+  <resource>
+    <capability namespace="osgi.identity">
+      <attribute name="osgi.identity" value="com.easyiot.color3led.device.api"/>
+      <attribute name="type" value="osgi.bundle"/>
+      <attribute name="version" type="Version" value="1.0.0.201609151034"/>
+    </capability>
+    <capability namespace="osgi.content">
+      <attribute name="osgi.content" value="92b01476836dbd3e3672c24f248a99de6df8cc3b65fefa61beee573c6480ce26"/>
+      <attribute name="url" value="com.easyiot.color3led.device.api/com.easyiot.color3led.device.api-1.0.0.jar"/>
+      <attribute name="size" type="Long" value="8345"/>
+      <attribute name="mime" value="application/vnd.osgi.bundle"/>
+    </capability>
+    <capability namespace="osgi.wiring.bundle">
+      <attribute name="osgi.wiring.bundle" value="com.easyiot.color3led.device.api"/>
+      <attribute name="bundle-version" type="Version" value="1.0.0.201609151034"/>
+    </capability>
+    <capability namespace="osgi.wiring.host">
+      <attribute name="osgi.wiring.host" value="com.easyiot.color3led.device.api"/>
+      <attribute name="bundle-version" type="Version" value="1.0.0.201609151034"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="com.easyiot.color3led.device.api.dto"/>
+      <attribute name="version" type="Version" value="1.0.0"/>
+      <attribute name="bundle-symbolic-name" value="com.easyiot.color3led.device.api"/>
+      <attribute name="bundle-version" type="Version" value="1.0.0.201609151034"/>
+      <directive name="uses" value="org.osgi.dto"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="com.easyiot.color3led.device.api.capability"/>
+      <attribute name="version" type="Version" value="1.0.0"/>
+      <attribute name="bundle-symbolic-name" value="com.easyiot.color3led.device.api"/>
+      <attribute name="bundle-version" type="Version" value="1.0.0.201609151034"/>
+    </capability>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.osgi.dto)(version&gt;=1.0.0)(!(version&gt;=2.0.0)))"/>
+    </requirement>
+    <requirement namespace="compile-only"/>
+    <requirement namespace="com.easyiot">
+      <attribute name="versionStr" value="1.0.0"/>
+      <directive name="filter" value="(&amp;(com.easyiot=color_3_led_device)(&amp;(version&gt;=1.0.0)(!(version&gt;=2.0.0))))"/>
+    </requirement>
+    <requirement namespace="osgi.ee">
+      <directive name="filter" value="(&amp;(osgi.ee=JavaSE)(version=1.8))"/>
+    </requirement>
+  </resource>
+  <resource>
+    <capability namespace="osgi.identity">
+      <attribute name="osgi.identity" value="com.easyiot.color3led.device.provider"/>
+      <attribute name="type" value="osgi.bundle"/>
+      <attribute name="version" type="Version" value="1.0.0.201609151114"/>
+    </capability>
+    <capability namespace="osgi.content">
+      <attribute name="osgi.content" value="18b388791927aa9872d919d0b0aaa3545b8edf0c5596af610a081c803a49b9ec"/>
+      <attribute name="url" value="com.easyiot.color3led.device.provider/com.easyiot.color3led.device.provider-1.0.0.jar"/>
+      <attribute name="size" type="Long" value="11201"/>
+      <attribute name="mime" value="application/vnd.osgi.bundle"/>
+    </capability>
+    <capability namespace="osgi.wiring.bundle">
+      <attribute name="osgi.wiring.bundle" value="com.easyiot.color3led.device.provider"/>
+      <attribute name="bundle-version" type="Version" value="1.0.0.201609151114"/>
+    </capability>
+    <capability namespace="osgi.wiring.host">
+      <attribute name="osgi.wiring.host" value="com.easyiot.color3led.device.provider"/>
+      <attribute name="bundle-version" type="Version" value="1.0.0.201609151114"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="com.easyiot.color3led.device.api.dto"/>
+      <attribute name="version" type="Version" value="1.0.0"/>
+      <attribute name="bundle-symbolic-name" value="com.easyiot.color3led.device.provider"/>
+      <attribute name="bundle-version" type="Version" value="1.0.0.201609151114"/>
+      <directive name="uses" value="org.osgi.dto"/>
+    </capability>
+    <capability namespace="osgi.service">
+      <attribute name="objectClass" type="List&lt;String&gt;" value="com.easyiot.base.api.Device"/>
+    </capability>
+    <capability namespace="com.easyiot">
+      <attribute name="version" type="Version" value="1.0.0"/>
+      <attribute name="com.easyiot" value="color_3_led_device"/>
+    </capability>
+    <capability namespace="osgi.service">
+      <attribute name="objectClass" type="List&lt;String&gt;" value="com.easyiot.base.api.Device"/>
+      <attribute name="greenPin" value="pin24"/>
+      <attribute name="redPin" value="pin25"/>
+      <attribute name="id" value="three.color.led"/>
+      <attribute name="bluePin" value="pin23"/>
+      <directive name="uses" value="com.easyiot.base.api"/>
+    </capability>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=com.easyiot.base.api)(version&gt;=1.0.0)(!(version&gt;=1.1.0)))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=com.easyiot.color3led.device.api.dto)(version&gt;=1.0.0)(!(version&gt;=2.0.0)))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=com.easyiot.gpio.protocol.api)(version&gt;=1.0.0)(!(version&gt;=2.0.0)))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.osgi.dto)(version&gt;=1.0.0)(!(version&gt;=2.0.0)))"/>
+    </requirement>
+    <requirement namespace="osgi.extender">
+      <directive name="filter" value="(&amp;(osgi.extender=osgi.component)(version&gt;=1.3.0)(!(version&gt;=2.0.0)))"/>
+    </requirement>
+    <requirement namespace="osgi.service">
+      <directive name="filter" value="(objectClass=com.easyiot.gpio.protocol.api.GpioProtocol)"/>
+      <directive name="effective" value="active"/>
+    </requirement>
+    <requirement namespace="com.easyiot">
+      <attribute name="versionStr" value="1.0.0"/>
+      <directive name="filter" value="(&amp;(com.easyiot=color_3_led_device)(&amp;(version&gt;=1.0.0)(!(version&gt;=2.0.0))))"/>
+    </requirement>
+    <requirement namespace="osgi.ee">
+      <directive name="filter" value="(&amp;(osgi.ee=JavaSE)(version=1.8))"/>
+    </requirement>
+    <requirement namespace="osgi.service">
+      <directive name="filter" value="(objectClass=com.easyiot.gpio.protocol.api.GpioProtocol)"/>
       <directive name="effective" value="active"/>
     </requirement>
     <requirement namespace="osgi.extender">
