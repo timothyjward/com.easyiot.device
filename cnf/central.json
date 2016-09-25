@@ -1,5 +1,5 @@
 {
- "recurse":true,"revisionRefs":[{
+ "revisionRefs":[{
   "artifactId":"org.fusesource.hawtbuf.hawtbuf","baseline":"1.11.0","bsn":"org.fusesource.hawtbuf.hawtbuf","created":1403278358253,"description":"HawtBuf: a rich byte buffer library","groupId":"osgi","md5":"A80061BD945CA0F13072861777FF27B1","name":"hawtbuf","phase":"MASTER","revision":"8F0E50AD8BEA37B84B698EC40CCE09E47714A63E","size":50155,"urls":["http://repo1.maven.org/maven2/org/fusesource/hawtbuf/hawtbuf/1.11/hawtbuf-1.11.jar","http://repo.jpm4j.org/#!/p/sha/8F0E50AD8BEA37B84B698EC40CCE09E47714A63E//0.0.0"],"version":"1.11.0"
  },{
   "artifactId":"hawtdispatch","baseline":"1.22.0","bsn":"org.fusesource.hawtdispatch.hawtdispatch","created":1438008554152,"description":"HawtDispatch: The libdispatch style API for Java","errors":1,"groupId":"org.fusesource.hawtdispatch","md5":"50AD1C3AB5D5DC74C3138BB8FADA0BF9","name":"hawtdispatch","phase":"MASTER","revision":"E2D9EAC51CAD0E75E7ED95C5183C9B655390CDD6","size":119139,"tag":"hawtdispatch-project-1.22","urls":["http://repo1.maven.org/maven2/org/fusesource/hawtdispatch/hawtdispatch/1.22/hawtdispatch-1.22.jar"],"version":"1.22"
