@@ -13,7 +13,8 @@ Private-Package: \
 	com.easyiot.websocket.protocol.api
 	
 -testpath: \
-	osgi.enroute.junit.wrapper;version=4.12
+	osgi.enroute.junit.wrapper;version=4.12,\
+	org.mockito.mockito-all
 
 -includeresource: {readme.md}
 
@@ -35,4 +36,6 @@ Bundle-License: \
 	https://opensource.org/licenses/Apache-2.0; \
 	link=http://www.apache.org/licenses/LICENSE-2.0; \
 	description="Apache Software License 2.0"
-Export-Package: com.easyiot.auslora.device.api.dto
+Export-Package: \
+	com.easyiot.auslora.device.api.dto,\
+	com.easyiot.auslora.device.api.dto.sensor
