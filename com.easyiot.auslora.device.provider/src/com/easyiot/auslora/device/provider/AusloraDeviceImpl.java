@@ -11,6 +11,7 @@ import org.osgi.service.metatype.annotations.Designate;
 
 import com.easyiot.auslora.device.api.capability.AusloraDeviceCapability.ProvideAusloraDevice_v1_0_0;
 import com.easyiot.auslora.device.api.dto.AusloraDataDTO;
+import com.easyiot.auslora.device.api.dto.AusloraMetadataDTO;
 import com.easyiot.auslora.device.api.dto.sensor.SensorDataDTO;
 import com.easyiot.auslora.device.provider.configuration.AusloraSensorConfiguration;
 import com.easyiot.base.api.Device;
@@ -36,10 +37,13 @@ public class AusloraDeviceImpl implements Device {
 		try {
 			// Only use the GW data messages
 			if (str.contains("\"cmd\":\"gw\"")) {
-				AusloraDataDTO newData = dtoConverter.decoder(AusloraDataDTO.class).get(str);
+				AusloraMetadataDTO newMetaData = dtoConverter.decoder(AusloraMetadataDTO.class).get(str);
 				// Decode payload
-				SensorDataDTO sensorData = parseSensorData(newData.metadataDTO.data);
-				newData.sensorData = sensorData;
+				SensorDataDTO sensorData = parseSensorData(newMetaData.data);
+				AusloraDataDTO newData = new AusloraDataDTO();
+				newData.metadataDTO = newMetaData;
+				// If the sensor data is corrupted use the last known value
+				newData.sensorData = sensorData == null ? lastKnownData.get().sensorData : sensorData;
 				lastKnownData.set(newData);
 			}
 		} catch (Exception e) {
@@ -58,13 +62,16 @@ public class AusloraDeviceImpl implements Device {
 	// Parses the daat according to the sensor data structure
 	private SensorDataDTO parseSensorData(String data) {
 		String[] values = new String(DatatypeConverter.parseHexBinary(data)).split(",");
-		SensorDataDTO returnVal = new SensorDataDTO();
-		returnVal.deviceType = values[1];
-		returnVal.reportType = values[2];
-		returnVal.gpsFixStatus = values[3];
-		returnVal.longitude = values[4];
-		returnVal.latitude = values[5];
-		returnVal.batteryCapacity = values[6].substring(0, values[6].indexOf("*"));
+		SensorDataDTO returnVal = null;
+		if (values.length == 7) {
+			returnVal = new SensorDataDTO();
+			returnVal.deviceType = values[1];
+			returnVal.reportType = values[2];
+			returnVal.gpsFixStatus = values[3];
+			returnVal.longitude = values[4];
+			returnVal.latitude = values[5];
+			returnVal.batteryCapacity = values[6].substring(0, values[6].indexOf("*"));
+		}
 		return returnVal;
 	}
 
