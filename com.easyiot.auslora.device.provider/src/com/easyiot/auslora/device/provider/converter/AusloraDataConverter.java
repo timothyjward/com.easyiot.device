@@ -9,6 +9,7 @@ import com.easyiot.auslora_websocket.protocol.api.dto.AusloraMetadataDTO;
 import osgi.enroute.dto.api.DTOs;
 
 public class AusloraDataConverter {
+	@SuppressWarnings("unused")
 	private DTOs dtoConverter;
 
 	public SensorDataDTO convert(AusloraMetadataDTO metadata, DTOs dtoConverter) {

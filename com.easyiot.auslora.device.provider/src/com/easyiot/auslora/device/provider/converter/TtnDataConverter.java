@@ -9,6 +9,7 @@ import com.easyiot.ttn_mqtt.protocol.api.dto.TtnMetaDataDTO;
 import osgi.enroute.dto.api.DTOs;
 
 public class TtnDataConverter {
+	@SuppressWarnings("unused")
 	private DTOs dtoConverter;
 
 	public SensorDataDTO convert(TtnMetaDataDTO metadata, DTOs dtoConverter) {
