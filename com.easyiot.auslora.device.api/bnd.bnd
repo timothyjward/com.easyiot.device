@@ -5,8 +5,7 @@ Bundle-Description: 				\
 	
 Export-Package: \
 	com.easyiot.auslora.device.api.dto;provide:=true,\
-	com.easyiot.auslora.device.api.capability,\
-	com.easyiot.auslora.device.api.dto.sensor
+	com.easyiot.auslora.device.api.capability
 
 
 Require-Capability: \

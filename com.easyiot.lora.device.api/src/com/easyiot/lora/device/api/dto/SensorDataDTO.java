@@ -1,15 +1,13 @@
 package com.easyiot.lora.device.api.dto;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.osgi.dto.DTO;
 
+import com.easyiot.lora.device.api.capability.LoraDeviceCapability.RequireLoraDevice;
+
+@RequireLoraDevice(versionStr = "1.0.0")
 public class SensorDataDTO extends DTO{
-// With default values
-	public String payload = "25";
-	public int port;
-	public int counter;
-	public String dev_eui;
-	public List<MetaDataDTO> metadata = Arrays.asList(new MetaDataDTO());
+	public long lon;
+	public long lat;
+	public int temp;
+	public MetaDataDTO metadata;
 }

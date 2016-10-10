@@ -1,4 +1,4 @@
-package com.easyiot.auslora.device.api.dto.sensor;
+package com.easyiot.auslora.device.api.dto;
 
 public interface SensorDataConstants {
 	// device type constants

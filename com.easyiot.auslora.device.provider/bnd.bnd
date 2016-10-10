@@ -4,13 +4,15 @@ Bundle-Description: 				\
 
 Private-Package: \
 	com.easyiot.auslora.device.provider,\
-	com.easyiot.auslora.device.provider.configuration
+	com.easyiot.auslora.device.provider.configuration,\
+	com.easyiot.auslora.device.provider.converter
 	
 -buildpath: \
 	osgi.enroute.base.api;version=1.0,\
 	com.easyiot.auslora.device.api;version=latest,\
 	com.easyiot.base.api,\
-	com.easyiot.websocket.protocol.api
+	com.easyiot.auslora-websocket.protocol.api,\
+	com.easyiot.ttn-mqtt.protocol.api
 	
 -testpath: \
 	osgi.enroute.junit.wrapper;version=4.12,\

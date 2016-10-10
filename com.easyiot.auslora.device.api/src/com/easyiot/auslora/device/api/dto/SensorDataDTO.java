@@ -1,7 +1,10 @@
-package com.easyiot.auslora.device.api.dto.sensor;
+package com.easyiot.auslora.device.api.dto;
 
 import org.osgi.dto.DTO;
 
+import com.easyiot.auslora.device.api.capability.AusloraDeviceCapability.RequireAusloraDevice;
+
+@RequireAusloraDevice(versionStr="1.0.0")
 public class SensorDataDTO extends DTO {
 
 	// Should be one of device type constants
@@ -21,5 +24,8 @@ public class SensorDataDTO extends DTO {
 
 	// Percent capacity
 	public String batteryCapacity = "1";
+	
+	// Metadata Dto
+	public MetaDataDTO metadata;
 
 }

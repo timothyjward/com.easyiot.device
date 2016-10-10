@@ -2,21 +2,23 @@ package com.easyiot.auslora.device.provider;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
 
 import com.easyiot.auslora.device.api.capability.AusloraDeviceCapability.ProvideAusloraDevice_v1_0_0;
-import com.easyiot.auslora.device.api.dto.AusloraDataDTO;
-import com.easyiot.auslora.device.api.dto.AusloraMetadataDTO;
-import com.easyiot.auslora.device.api.dto.sensor.SensorDataDTO;
+import com.easyiot.auslora.device.api.dto.SensorDataDTO;
 import com.easyiot.auslora.device.provider.configuration.AusloraSensorConfiguration;
+import com.easyiot.auslora.device.provider.converter.AusloraDataConverter;
+import com.easyiot.auslora.device.provider.converter.TtnDataConverter;
+import com.easyiot.auslora_websocket.protocol.api.AusloraWebsocketListener;
+import com.easyiot.auslora_websocket.protocol.api.AusloraWebsocketProtocol;
 import com.easyiot.base.api.Device;
-import com.easyiot.websocket.protocol.api.WebsocketProtocol;
-import com.easyiot.websocket.protocol.api.WsListener;
+import com.easyiot.ttn_mqtt.protocol.api.TtnMqttMessageListener;
+import com.easyiot.ttn_mqtt.protocol.api.TtnMqttProtocol;
 
 import osgi.enroute.dto.api.DTOs;
 
@@ -25,58 +27,57 @@ import osgi.enroute.dto.api.DTOs;
 @Designate(ocd = AusloraSensorConfiguration.class, factory = true)
 public class AusloraDeviceImpl implements Device {
 	private AusloraSensorConfiguration deviceConfiguration;
-	private AtomicReference<AusloraDataDTO> lastKnownData = new AtomicReference<AusloraDataDTO>(new AusloraDataDTO());
-
-	@Reference(name = "wsProtocolReference")
-	WebsocketProtocol wsClient;
+	private AtomicReference<SensorDataDTO> lastKnownData = new AtomicReference<SensorDataDTO>(new SensorDataDTO());
+	private AusloraDataConverter myAusloraDataConverter = new AusloraDataConverter();
+	private TtnDataConverter myTtnDataConverter = new TtnDataConverter();
 
 	@Reference
 	private DTOs dtoConverter;
 
-	private WsListener callback = (str) -> {
-		try {
-			// Only use the GW data messages
-			if (str.contains("\"cmd\":\"gw\"")) {
-				AusloraMetadataDTO newMetaData = dtoConverter.decoder(AusloraMetadataDTO.class).get(str);
-				// Decode payload
-				SensorDataDTO sensorData = parseSensorData(newMetaData.data);
-				AusloraDataDTO newData = new AusloraDataDTO();
-				newData.metadataDTO = newMetaData;
-				// If the sensor data is corrupted use the last known value
-				newData.sensorData = sensorData == null ? lastKnownData.get().sensorData : sensorData;
-				lastKnownData.set(newData);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	private AusloraWebsocketListener callback = (metadata) -> {
+		SensorDataDTO sensorData = myAusloraDataConverter.convert(metadata, dtoConverter);
+		lastKnownData.set(sensorData);
 	};
+
+	// bind ausloraProtocol
+	@Reference(name = "auslorawsProtocolReference", cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC, unbind = "unSetAusloraWebSocket")
+	public void setAusloraWebSocket(AusloraWebsocketProtocol auslorawsClient) {
+		String deviceChannel = String.format("app?id=%s&token=%s", deviceConfiguration.applicationId(),
+				deviceConfiguration.securityToken());
+		auslorawsClient.connect(deviceChannel, deviceConfiguration.deviceEUI(), callback);
+	}
+
+	// unbind auslora client
+	public void unSetAusloraWebSocket(AusloraWebsocketProtocol auslorawsClient) {
+		String deviceChannel = String.format("app?id=%s&token=%s", deviceConfiguration.applicationId(),
+				deviceConfiguration.securityToken());
+		auslorawsClient.disconnect(deviceChannel, deviceConfiguration.deviceEUI(), callback);
+	}
+
+	// lambda that is subscribed to MQTT
+	private TtnMqttMessageListener subsMethod = (metadata) -> {
+		SensorDataDTO newData = myTtnDataConverter.convert(metadata, dtoConverter);
+		lastKnownData.set(newData);
+	};
+
+	// Bind mqttClient
+	@Reference(name = "mqttProtocolReference", cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC, unbind = "unMqttClient")
+	public void setMqttClient(TtnMqttProtocol ttnMqttClient) {
+		ttnMqttClient.subscribe(deviceConfiguration.subscriptionChannel(), subsMethod);
+	}
+
+	// Unbind mqttclient
+	public void unMqttClient(TtnMqttProtocol ttnMqttClient) {
+		ttnMqttClient.unsubscribe(deviceConfiguration.subscriptionChannel());
+	}
 
 	@Activate
 	public void activate(AusloraSensorConfiguration deviceConfiguration) {
 		this.deviceConfiguration = deviceConfiguration;
-		String deviceChannel = String.format("app?id=%s&token=%s", deviceConfiguration.applicationId(),
-				deviceConfiguration.securityToken());
-		wsClient.connect(deviceChannel, callback);
-	}
-
-	// Parses the daat according to the sensor data structure
-	private SensorDataDTO parseSensorData(String data) {
-		String[] values = new String(DatatypeConverter.parseHexBinary(data)).split(",");
-		SensorDataDTO returnVal = null;
-		if (values.length == 7) {
-			returnVal = new SensorDataDTO();
-			returnVal.deviceType = values[1];
-			returnVal.reportType = values[2];
-			returnVal.gpsFixStatus = values[3];
-			returnVal.longitude = values[4];
-			returnVal.latitude = values[5];
-			returnVal.batteryCapacity = values[6].substring(0, values[6].indexOf("*"));
-		}
-		return returnVal;
 	}
 
 	@GetMethod
-	public AusloraDataDTO getData() {
+	public SensorDataDTO getData() {
 		return lastKnownData.get();
 	}
 

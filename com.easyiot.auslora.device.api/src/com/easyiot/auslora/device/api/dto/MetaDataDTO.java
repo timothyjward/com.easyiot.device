@@ -1,8 +1,6 @@
-package com.easyiot.lora.device.api.dto;
+package com.easyiot.auslora.device.api.dto;
 
 import org.osgi.dto.DTO;
-
-import com.easyiot.lora.device.api.capability.LoraDeviceCapability.RequireLoraDevice;
 
 public class MetaDataDTO extends DTO {
 	// comma separated string

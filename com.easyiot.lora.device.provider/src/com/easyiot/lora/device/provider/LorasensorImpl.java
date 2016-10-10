@@ -1,21 +1,25 @@
 package com.easyiot.lora.device.provider;
 
-import java.util.Base64;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
 
+import com.easyiot.auslora_websocket.protocol.api.AusloraWebsocketListener;
+import com.easyiot.auslora_websocket.protocol.api.AusloraWebsocketProtocol;
 import com.easyiot.base.api.Device;
 import com.easyiot.lora.device.api.capability.LoraDeviceCapability.ProvideLoraDevice_v1_0_0;
 import com.easyiot.lora.device.api.dto.SensorDataDTO;
 import com.easyiot.lora.device.provider.configuration.LoraSensorConfiguration;
-import com.easyiot.mqtt.protocol.api.MessageListener;
-import com.easyiot.mqtt.protocol.api.MqttProtocol;
+import com.easyiot.lora.device.provider.converter.AusloraDataConverter;
+import com.easyiot.lora.device.provider.converter.TtnDataConverter;
+import com.easyiot.ttn_mqtt.protocol.api.TtnMqttMessageListener;
+import com.easyiot.ttn_mqtt.protocol.api.TtnMqttProtocol;
 
 import osgi.enroute.dto.api.DTOs;
 
@@ -28,33 +32,50 @@ public class LorasensorImpl implements Device {
 	@Reference
 	private DTOs dtoConverter;
 	private LoraSensorConfiguration deviceConfiguration;
+	private AusloraDataConverter myAusloraDataConverter = new AusloraDataConverter();
+	private TtnDataConverter myTtnDataConverter = new TtnDataConverter();
+
 	private SensorDataDTO newData = new SensorDataDTO();
 	// lambda that is subscribed to MQTT
-	private MessageListener subsMethod = (str) -> {
-		try {
-			SensorDataDTO newData = dtoConverter.decoder(SensorDataDTO.class).get(str);
-			// Decode payload
-			newData.payload = new String(Base64.getDecoder().decode(newData.payload));
-			lastKnownData.set(newData);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	private TtnMqttMessageListener subsMethod = (metadata) -> {
+		SensorDataDTO newData = myTtnDataConverter.convert(metadata, dtoConverter);
+		lastKnownData.set(newData);
 	};
 
-	@Reference(name="mqttProtocolReference")
-	MqttProtocol mqttClient;
+	private AusloraWebsocketListener callback = (metadata) -> {
+		SensorDataDTO sensorData = myAusloraDataConverter.convert(metadata, dtoConverter);
+		lastKnownData.set(sensorData);
+	};
+
+	// Bind mqttClient
+	@Reference(name = "mqttProtocolReference", cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC, unbind = "unMqttClient")
+	public void setMqttClient(TtnMqttProtocol ttnMqttClient) {
+		ttnMqttClient.subscribe(deviceConfiguration.subscriptionChannel(), subsMethod);
+	}
+
+	// Unbind mqttclient
+	public void unMqttClient(TtnMqttProtocol ttnMqttClient) {
+		ttnMqttClient.unsubscribe(deviceConfiguration.subscriptionChannel());
+	}
+
+	// bind ausloraProtocol
+	@Reference(name = "auslorawsProtocolReference", cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC, unbind = "unSetAusloraWebSocket")
+	public void setAusloraWebSocket(AusloraWebsocketProtocol auslorawsClient) {
+		String deviceChannel = String.format("app?id=%s&token=%s", deviceConfiguration.applicationId(),
+				deviceConfiguration.securityToken());
+		auslorawsClient.connect(deviceChannel, deviceConfiguration.deviceEUI(), callback);
+	}
+
+	// unbind auslora client
+	public void unSetAusloraWebSocket(AusloraWebsocketProtocol auslorawsClient) {
+		String deviceChannel = String.format("app?id=%s&token=%s", deviceConfiguration.applicationId(),
+				deviceConfiguration.securityToken());
+		auslorawsClient.disconnect(deviceChannel, deviceConfiguration.deviceEUI(), callback);
+	}
 
 	@Activate
 	public void activate(LoraSensorConfiguration conf) {
 		this.deviceConfiguration = conf;
-		mqttClient.subscribe(deviceConfiguration.subscriptionChannel(), subsMethod);
-	}
-
-	@Modified
-	public void modified(LoraSensorConfiguration conf) {
-		mqttClient.unsubscribe(deviceConfiguration.subscriptionChannel());
-		this.deviceConfiguration = conf;
-		mqttClient.subscribe(deviceConfiguration.subscriptionChannel(), subsMethod);
 	}
 
 	@GetMethod
@@ -68,9 +89,9 @@ public class LorasensorImpl implements Device {
 	private void createRandomData() {
 		if (NOT_AVAILABLE.equals(deviceConfiguration.subscriptionChannel())
 				|| NOT_AVAILABLE.equals(deviceConfiguration.publishChannel())) {
-			newData.payload = String.valueOf(120 * Math.random() - 20);
-			newData.metadata.get(0).latitude += (.01 * (Math.random() - 0.5));
-			newData.metadata.get(0).longitude += (.01 * (Math.random() - 0.5));
+			newData.temp = (int) (120 * Math.random() - 20);
+			newData.lat += (.01 * (Math.random() - 0.5));
+			newData.lon += (.01 * (Math.random() - 0.5));
 			lastKnownData.set(newData);
 		}
 	}
