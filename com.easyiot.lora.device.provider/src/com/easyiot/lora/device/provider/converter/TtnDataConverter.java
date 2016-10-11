@@ -1,5 +1,6 @@
 package com.easyiot.lora.device.provider.converter;
 
+import java.util.Base64;
 import java.util.stream.Collectors;
 
 import com.easyiot.lora.device.api.dto.MetaDataDTO;
@@ -19,6 +20,8 @@ public class TtnDataConverter {
 	private SensorDataDTO parseSensorData(TtnMetaDataDTO metadata) {
 		SensorDataDTO returnVal = new SensorDataDTO();
 		try {
+			// Decode sensor data
+			metadata.payload = new String(Base64.getDecoder().decode(metadata.payload));
 			// Parse sensor data
 			returnVal = dtoConverter.decoder(SensorDataDTO.class).get(metadata.payload);
 			returnVal.metadata = parseMetadata(metadata);

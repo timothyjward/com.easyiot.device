@@ -1,5 +1,6 @@
 package com.easyiot.auslora.device.provider.converter;
 
+import java.util.Base64;
 import java.util.stream.Collectors;
 
 import com.easyiot.auslora.device.api.dto.MetaDataDTO;
@@ -18,6 +19,9 @@ public class TtnDataConverter {
 	}
 
 	private SensorDataDTO parseSensorData(TtnMetaDataDTO metadata) {
+		// Decode sensor data
+		metadata.payload = new String(Base64.getDecoder().decode(metadata.payload));
+		// Parse data
 		String[] values = metadata.payload.split(",");
 		SensorDataDTO returnVal = null;
 		if (values.length == 7) {
@@ -30,7 +34,7 @@ public class TtnDataConverter {
 			returnVal.batteryCapacity = values[6].substring(0, values[6].indexOf("*"));
 		}
 		returnVal.metadata = parseMetadata(metadata);
-		
+
 		return returnVal;
 	}
 
@@ -39,8 +43,7 @@ public class TtnDataConverter {
 		// TODO newMeta.averageReceptionPeriod
 		// TODO newMeta.calculatedAltitude
 		// TODO newMeta.calculatedLatitude
-		newMeta.gateway_eui = metadata.gwts.stream().map((mData) -> mData.gateway_eui)
-				.collect(Collectors.joining(","));
+		newMeta.gateway_eui = metadata.gwts.stream().map((mData) -> mData.gateway_eui).collect(Collectors.joining(","));
 		newMeta.isRoaming = false;
 		newMeta.networkName = "TTN";
 		newMeta.timeStamp = metadata.gwts.get(0).gateway_timestamp;

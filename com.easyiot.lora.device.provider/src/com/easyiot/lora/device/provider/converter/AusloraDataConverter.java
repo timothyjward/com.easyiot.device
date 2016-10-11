@@ -2,6 +2,8 @@ package com.easyiot.lora.device.provider.converter;
 
 import java.util.stream.Collectors;
 
+import javax.xml.bind.DatatypeConverter;
+
 import com.easyiot.auslora_websocket.protocol.api.dto.AusloraMetadataDTO;
 import com.easyiot.lora.device.api.dto.MetaDataDTO;
 import com.easyiot.lora.device.api.dto.SensorDataDTO;
@@ -20,6 +22,8 @@ public class AusloraDataConverter {
 	private SensorDataDTO parseSensorData(AusloraMetadataDTO metadata) {
 		SensorDataDTO returnVal = new SensorDataDTO();
 		try {
+			//Decode the sensor data
+			metadata.data = new String(DatatypeConverter.parseHexBinary(metadata.data));
 			// Parse the sensor data
 			returnVal = dtoConverter.decoder(SensorDataDTO.class).get(metadata.data);
 			returnVal.metadata = parseMetadata(metadata);

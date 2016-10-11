@@ -38,5 +38,6 @@ Private-Package: \
 	osgi.enroute.dto.bndlib.provider;version='[1.0.0,1.0.1)',\
 	com.easyiot.auslora-websocket.protocol.provider;version='[1.0.0,1.0.1)',\
 	com.easyiot.lora.device.provider;version=snapshot,\
-	com.easyiot.websocket.protocol.provider;version='[1.0.0,1.0.1)'
+	com.easyiot.websocket.protocol.provider;version='[1.0.0,1.0.1)',\
+	com.easyiot.ttn-mqtt.protocol.provider;version='[1.0.0,1.0.1)'
 Export-Package: com.easyiot.lora.device.api.dto
