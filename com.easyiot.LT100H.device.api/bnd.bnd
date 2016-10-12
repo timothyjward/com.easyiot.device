@@ -1,0 +1,25 @@
+Bundle-Version:1.0.0.${tstamp}
+Bundle-Description: 				\
+	Device for auslora server. 
+
+	
+Export-Package: \
+	com.easyiot.LT100H.device.api.dto;provide:=true,\
+	com.easyiot.LT100H.device.api.capability
+
+
+Require-Capability: \
+	compile-only
+
+-buildpath: \
+	osgi.enroute.base.api;version=1.0,\
+	com.easyiot.base.api
+
+-testpath: \
+	osgi.enroute.junit.wrapper;version=4.12
+
+Bundle-License: \
+	https://opensource.org/licenses/Apache-2.0; \
+	link=http://www.apache.org/licenses/LICENSE-2.0; \
+	description="Apache Software License 2.0"
+	
